@@ -21,7 +21,7 @@ class Database {
     this.log(`Checking if the ${tableName} table exists...`);
 
     return this.context
-      .retrieveValue(`
+        .retrieveValue(`
         SELECT EXISTS (
           SELECT 1 
           FROM sqlite_master 
@@ -32,31 +32,31 @@ class Database {
 
   createUser(user) {
     return this.context
-      .execute(`
+        .execute(`
         INSERT INTO Users
           (firstName, lastName, emailAddress, password, createdAt, updatedAt)
         VALUES
           (?, ?, ?, ?, datetime('now'), datetime('now'));
       `,
-      user.firstName,
-      user.lastName,
-      user.emailAddress,
-      user.password);
+            user.firstName,
+            user.lastName,
+            user.emailAddress,
+            user.password);
   }
 
   createCourse(course) {
     return this.context
-      .execute(`
+        .execute(`
         INSERT INTO Courses
           (userId, title, description, estimatedTime, materialsNeeded, createdAt, updatedAt)
         VALUES
           (?, ?, ?, ?, ?, datetime('now'), datetime('now'));
       `,
-      course.userId,
-      course.title,
-      course.description,
-      course.estimatedTime,
-      course.materialsNeeded);
+            course.userId,
+            course.title,
+            course.description,
+            course.estimatedTime,
+            course.materialsNeeded);
   }
 
   async hashUserPasswords(users) {

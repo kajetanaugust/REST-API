@@ -10,5 +10,5 @@ const database = new Database(data, enableLogging);
 promiseFinally.shim();
 
 database.init()
-  .catch(err => console.error(err))
-  .finally(() => process.exit());
+    .catch(err => console.error(err))
+    .finally(() => process.exit());
