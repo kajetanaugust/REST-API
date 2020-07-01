@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "express-validator": "^6.6.0",
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "basic-auth": "^2.0.1",
     "bcryptjs": "^2.4.3",
     "cross-env": "^5.2.1",
     "express": "^4.17.1",
