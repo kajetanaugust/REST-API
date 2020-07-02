@@ -4,11 +4,6 @@ const User = require('../models').User;
 const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
 
-// This array is used to keep track of user records
-// as they are created.
-// const users = User;
-// console.log(users);
-
 
 /**
  * Middleware to authenticate the request using Basic Authentication.
