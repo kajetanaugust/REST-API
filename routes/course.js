@@ -72,7 +72,7 @@ const authenticateUser =  async (req, res, next) => {
 
 
 
-
+//ASYNC HANDLER
 
 function asyncHandler(cb){
     return async(req, res, next) => {
@@ -83,6 +83,10 @@ function asyncHandler(cb){
         }
     }
 }
+
+
+
+//ROUTES
 
 router.get('/courses', asyncHandler(async(req, res) => {
     try{
@@ -178,18 +182,25 @@ router.put('/courses/:id',[
         throw error;
     }
 
-
-
-
-
 }))
-//
-// router.delete('/courses/:id', asyncHandler(async (req, res) => {
-//     try{
-//
-//     }catch(err) {
-//
-//     }
-// }))
+
+
+router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
+    try {
+        let selectedCourse;
+        const activeUser = req.currentUser;
+
+        selectedCourse = await Course.findByPk(req.params.id)
+
+        if(selectedCourse){
+            await selectedCourse.destroy(req.body)
+            res.status(204).end();
+        }else {
+            res.status(404).json({message: "Quote Not Found"})
+        }
+    }catch(error){
+        throw error;
+    }
+}))
 
 module.exports = router;
