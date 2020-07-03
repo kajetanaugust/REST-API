@@ -18,6 +18,8 @@ app.use(express.json());
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+////////////////////////////////////////
+// testing connection to the database
 console.log('Testing the connection to the database...');
 (async () => {
   try {
@@ -52,13 +54,13 @@ app.use((req, res) => {
 });
 
 // setup a global error handler
-app.use((err, req, res, next) => {
+app.use((error, req, res, next) => {
   if (enableGlobalErrorLogging) {
-    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+    console.error(`Global error handler: ${JSON.stringify(error.stack)}`);
   }
 
-  res.status(err.status || 500).json({
-    message: err.message,
+  res.status(error.status || 500).json({
+    message: error.message,
     error: {},
   });
 });

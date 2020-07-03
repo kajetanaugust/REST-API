@@ -11,8 +11,6 @@ const { check, validationResult } = require('express-validator');
 const router = express.Router();
 
 
-
-
 // Authenticate User Middleware
 const authenticateUser =  async (req, res, next) => {
 
@@ -85,18 +83,22 @@ function asyncHandler(cb){
 }
 
 
+////////////
+// ROUTES //
+////////////
 
-//ROUTES
 
+// GET route for getting all courses
 router.get('/courses', asyncHandler(async(req, res) => {
     try{
         const courseList = await Course.findAll({ order: [[ "createdAt", "DESC" ]] })
         res.json(courseList);
-    }catch(err) {
-        res.json({message: err.message}).status(404)
+    }catch(error) {
+        res.json({message: error.message}).status(404)
     }
 }))
 
+// GET route for getting individual courses
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     try{
         const chosenCourse = await Course.findByPk(req.params.id);
@@ -105,11 +107,13 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
         } else {
             res.sendStatus(404)
         }
-    }catch(err) {
-        res.json({message: err.message}).status(404)
+    }catch(error) {
+        res.json({message: error.message}).status(404)
     }
 }))
 
+
+// POST route for adding new course
 router.post('/courses',[
     check('title')
         .exists({ checkNull: true})
@@ -118,7 +122,7 @@ router.post('/courses',[
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a "description"'),
 
-], authenticateUser, asyncHandler(async (req, res, next) => {
+], authenticateUser, asyncHandler(async (req, res, next) => { // POST route authentication
     const authenticationErrors = validationResult(req);
     try {
         // If there are validation errors...
@@ -142,7 +146,7 @@ router.post('/courses',[
 
 
 
-
+// PUT route for updating course info
 router.put('/courses/:id',[
     check('title')
         .exists({ checkNull: true})
@@ -151,7 +155,7 @@ router.put('/courses/:id',[
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a "description"'),
 
-], authenticateUser, asyncHandler(async (req, res, next) => {
+], authenticateUser, asyncHandler(async (req, res, next) => { // PUT route authentication
     const authenticationErrors = validationResult(req);
     try {
         // If there are validation errors...
@@ -165,16 +169,16 @@ router.put('/courses/:id',[
 
         let selectedCourse;
         const activeUser = req.currentUser;
-        selectedCourse = await Course.findByPk(req.params.id)
+        selectedCourse = await Course.findByPk(req.params.id); // selecting course
 
-        if(selectedCourse){
+        if(selectedCourse){// checking if selected course exists
             await selectedCourse.update(req.body)
             res.status(204).end();
         }else {
             res.status(404).json({message: "Quote Not Found"})
         }
 
-        course = await Course.update(req.body);
+        course = await Course.update(req.body); // updating course
         const newId = course.id;
         res.location(`/courses/${newId}`).status(201).end();
 
@@ -184,15 +188,15 @@ router.put('/courses/:id',[
 
 }))
 
-
+// DELETE route for deleting course
 router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
     try {
         let selectedCourse;
         const activeUser = req.currentUser;
 
-        selectedCourse = await Course.findByPk(req.params.id)
+        selectedCourse = await Course.findByPk(req.params.id)// selecting course
 
-        if(selectedCourse){
+        if(selectedCourse){// checking if selected course exists
             await selectedCourse.destroy(req.body)
             res.status(204).end();
         }else {

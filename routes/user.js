@@ -115,8 +115,13 @@ router.post('/users', [
 
         // Set the status to 201 Created and end the response.
         return res.location(`/`).status(201).end();
-    }catch(err) {
-        res.status(500).json({message: err.message})
+    }catch(error) {
+        if(error.name === "SequelizeUniqueConstraintError"){ //checks if email is already in a database
+            return res.status(422).json({message: 'Email address must be unique'});
+        }else{
+            throw error;
+        }
+
     }
 }));
 
