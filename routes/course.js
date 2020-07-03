@@ -91,8 +91,14 @@ function asyncHandler(cb){
 // GET route for getting all courses
 router.get('/courses', asyncHandler(async(req, res) => {
     try{
-        const courseList = await Course.findAll({ order: [[ "createdAt", "DESC" ]] })
+        const courseList = await Course.findAll({ order: [[ "createdAt", "DESC" ]],
+
+                attributes:['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
+
+        })
         res.json(courseList);
+
+
     }catch(error) {
         res.json({message: error.message}).status(404)
     }
@@ -103,7 +109,14 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
     try{
         const chosenCourse = await Course.findByPk(req.params.id);
         if(chosenCourse){
-            res.json(chosenCourse);
+            res.json({
+                id: chosenCourse.id,
+                title: chosenCourse.title,
+                description: chosenCourse.description,
+                estimatedTime: chosenCourse.estimatedTime,
+                materialsNeeded: chosenCourse.materialsNeeded,
+                userId: chosenCourse.userId
+            });
         } else {
             res.sendStatus(404)
         }
@@ -172,8 +185,12 @@ router.put('/courses/:id',[
         selectedCourse = await Course.findByPk(req.params.id); // selecting course
 
         if(selectedCourse){// checking if selected course exists
-            await selectedCourse.update(req.body)
-            res.status(204).end();
+            if(activeUser.id === selectedCourse.userId) {
+                await selectedCourse.update(req.body)
+                res.status(204).end();
+            }else {
+                return res.status(403).json({message: "You can only edit your own courses!"})
+            }
         }else {
             res.status(404).json({message: "Quote Not Found"})
         }
@@ -197,8 +214,12 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, ne
         selectedCourse = await Course.findByPk(req.params.id)// selecting course
 
         if(selectedCourse){// checking if selected course exists
-            await selectedCourse.destroy(req.body)
-            res.status(204).end();
+            if(activeUser.id === selectedCourse.userId) {
+                await selectedCourse.destroy(req.body)
+                res.status(204).end();
+            }else {
+                return res.status(403).json({message: "You can only delete your own courses!"})
+            }
         }else {
             res.status(404).json({message: "Quote Not Found"})
         }
