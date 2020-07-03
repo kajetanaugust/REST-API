@@ -19,7 +19,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 ////////////////////////////////////////
-// testing connection to the database
+// testing connection to the database///
+////////////////////////////////////////
 console.log('Testing the connection to the database...');
 (async () => {
   try {
@@ -39,7 +40,7 @@ console.log('Testing the connection to the database...');
 app.use('/api', userRoutes);
 app.use('/api', courseRoutes);
 
-// setup a friendly greeting for the root route
+// greeting for the root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
@@ -53,12 +54,11 @@ app.use((req, res) => {
   });
 });
 
-// setup a global error handler
+// global error handler
 app.use((error, req, res, next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(error.stack)}`);
   }
-
   res.status(error.status || 500).json({
     message: error.message,
     error: {},
