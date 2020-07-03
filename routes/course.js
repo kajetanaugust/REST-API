@@ -92,24 +92,23 @@ function asyncHandler(cb){
 router.get('/courses', asyncHandler(async(req, res) => {
     try{
         const courseList = await Course.findAll({ order: [[ "createdAt", "DESC" ]],
-
-                attributes:['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
-
+                attributes:['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'], //filtering response attributes
         })
         res.json(courseList);
-
 
     }catch(error) {
         res.json({message: error.message}).status(404)
     }
 }))
 
+
+
 // GET route for getting individual courses
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     try{
         const chosenCourse = await Course.findByPk(req.params.id);
         if(chosenCourse){
-            res.json({
+            res.json({ // filtering response attributes
                 id: chosenCourse.id,
                 title: chosenCourse.title,
                 description: chosenCourse.description,
@@ -126,12 +125,13 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 }))
 
 
+
 // POST route for adding new course
 router.post('/courses',[
-    check('title')
+    check('title')// checking title
         .exists({ checkNull: true})
         .withMessage('Please provide a "title"'),
-    check('description')
+    check('description')// checking description
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a "description"'),
 
@@ -161,10 +161,10 @@ router.post('/courses',[
 
 // PUT route for updating course info
 router.put('/courses/:id',[
-    check('title')
+    check('title') // checking title
         .exists({ checkNull: true})
         .withMessage('Please provide a "title"'),
-    check('description')
+    check('description') // checking description
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a "description"'),
 
@@ -181,20 +181,19 @@ router.put('/courses/:id',[
         }
 
         let selectedCourse;
-        const activeUser = req.currentUser;
+        const activeUser = req.currentUser; // getting active user
         selectedCourse = await Course.findByPk(req.params.id); // selecting course
 
         if(selectedCourse){// checking if selected course exists
-            if(activeUser.id === selectedCourse.userId) {
-                await selectedCourse.update(req.body)
+            if(activeUser.id === selectedCourse.userId) {// checking if user owns the course
+                await selectedCourse.update(req.body) // updating the course
                 res.status(204).end();
             }else {
-                return res.status(403).json({message: "You can only edit your own courses!"})
+                return res.status(403).json({message: "You can only edit your own courses!"})// sending 403 error
             }
         }else {
-            res.status(404).json({message: "Quote Not Found"})
+            res.status(404).json({message: "Quote Not Found"})// sending 404 error
         }
-
         course = await Course.update(req.body); // updating course
         const newId = course.id;
         res.location(`/courses/${newId}`).status(201).end();
@@ -205,27 +204,31 @@ router.put('/courses/:id',[
 
 }))
 
+
+
 // DELETE route for deleting course
 router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
     try {
         let selectedCourse;
-        const activeUser = req.currentUser;
+        const activeUser = req.currentUser;// getting active user
 
         selectedCourse = await Course.findByPk(req.params.id)// selecting course
 
         if(selectedCourse){// checking if selected course exists
-            if(activeUser.id === selectedCourse.userId) {
-                await selectedCourse.destroy(req.body)
+            if(activeUser.id === selectedCourse.userId) {// checking if user owns a course
+                await selectedCourse.destroy(req.body)// deleting the course
                 res.status(204).end();
             }else {
-                return res.status(403).json({message: "You can only delete your own courses!"})
+                return res.status(403).json({message: "You can only delete your own courses!"})// sending 403 error
             }
         }else {
-            res.status(404).json({message: "Quote Not Found"})
+            res.status(404).json({message: "Quote Not Found"}) // sending 404 error
         }
     }catch(error){
         throw error;
     }
 }))
 
+
+// exporting routes
 module.exports = router;

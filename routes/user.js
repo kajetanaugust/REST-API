@@ -67,7 +67,7 @@ function asyncHandler(cb){
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser;
     console.log(user)
-    res.json({
+    res.json({ //filtering response attributes
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
