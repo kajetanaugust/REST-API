@@ -192,12 +192,8 @@ router.put('/courses/:id',[
                 return res.status(403).json({message: "You can only edit your own courses!"})// sending 403 error
             }
         }else {
-            res.status(404).json({message: "Quote Not Found"})// sending 404 error
+            res.status(404).json({message: "Course Not Found"})// sending 404 error
         }
-        course = await Course.update(req.body); // updating course
-        const newId = course.id;
-        res.location(`/courses/${newId}`).status(201).end();
-
     }catch(error){
         throw error;
     }
@@ -222,7 +218,7 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, ne
                 return res.status(403).json({message: "You can only delete your own courses!"})// sending 403 error
             }
         }else {
-            res.status(404).json({message: "Quote Not Found"}) // sending 404 error
+            res.status(404).json({message: "Course Not Found"}) // sending 404 error
         }
     }catch(error){
         throw error;
